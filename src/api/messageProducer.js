@@ -1,15 +1,5 @@
-const { SQS } = require("aws-sdk");
-const { generate } = require('../src/services/shorten');
-
-const options = {
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_KEY,
-  },
-  endpoint: process.env.QUEUSE_URL ,
-};
-
-const sqs = new SQS(options);
+const { generate } = require('../services/shorten');
+const { sqs } = require('../configs/sqs');
 
 const handler = async (event) => {
   let statusCode = 200;

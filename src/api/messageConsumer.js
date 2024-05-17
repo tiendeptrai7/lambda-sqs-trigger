@@ -1,8 +1,9 @@
-const { save } = require("../src/services/shorten");
+const { save } = require("../services/shorten");
 
 const handler = async (event) => {
   try {
     for (const record of event.Records) {
+      
       console.log("reading message: ", record.body);
 
       const messageBody = JSON.parse(record.body)

@@ -24,11 +24,11 @@ constructs:
   myqueue:
     type: queue
     worker:
-      handler: src/messageConsumer.handler
+      handler: src/api/messageConsumer.handler
 
 functions:
   produceMessage:
-    handler: src/messageProducer.handler
+    handler: src/api/messageProducer.handler
     events:
       - httpApi:
           method: post
