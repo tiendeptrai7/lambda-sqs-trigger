@@ -1,13 +1,12 @@
 const { SQS } = require("aws-sdk");
-
-const offlineQueueUrl = "http://localhost:9324/000000000000/myqueue";
+const { generate } = require('../src/services/shorten');
 
 const options = {
   credentials: {
-    accessKeyId: "doesnt_matter",
-    secretAccessKey: "doesnt_matter",
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_KEY,
   },
-  endpoint: "http://localhost:9324",
+  endpoint: process.env.QUEUSE_URL ,
 };
 
 const sqs = new SQS(options);
@@ -15,12 +14,18 @@ const sqs = new SQS(options);
 const handler = async (event) => {
   let statusCode = 200;
   let message;
+  let generateUrl = null;
+  const key = event.headers['key-shorten'];
+  const body = JSON.parse(event.body);
+  const url = body?.originalUrl ?? '';
 
   try {
+    generateUrl = await generate(key, url)
+
     await sqs
       .sendMessage({
-        QueueUrl: offlineQueueUrl,
-        MessageBody: event.body || "",
+        QueueUrl: process.env.QUEUSE_URL + '/' + process.env.REGION + '/' + process.env.QUEUSE_NAME,
+        MessageBody: JSON.stringify(generateUrl) || "",
         MessageAttributes: {
           AttributeName: {
             StringValue: "Attribute Value",
@@ -40,8 +45,9 @@ const handler = async (event) => {
   return {
     statusCode,
     body: JSON.stringify({
-      message,
-    }),
+      url_code: generateUrl === null ? '' : generateUrl.code,
+      short_url: generateUrl === null ? '' : generateUrl.shortUrl,
+  }),
   };
 };
 

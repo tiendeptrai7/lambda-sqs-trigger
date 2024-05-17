@@ -1,52 +1,55 @@
-'use strict';
+"use strict";
 const ValidUrl = require("valid-url");
 const shortid = require("shortid");
-const sha1 = require('sha1');
-
-const params = require('../configs/params');
+const sha1 = require("sha1");
+const params = require("../configs/params");
 const model = require("../models/shorten");
 
 module.exports = {
-    get: async function(code) {
-        try {
-            return await model.getByCode(code);
-        }
-        catch (err) {
-            console.log(err.message);
-        }
-    },
-
-    generate: async function(key, url) {
-        if (key != params.key) {
-            return null;
-        }
-
-        if (!ValidUrl.isUri(url)) {
-            return null;
-        }
-
-        try {
-            const hash = sha1(url);
-            const data = await model.getByHash(hash);
-            if (data) return data;
-
-            const code = shortid.generate();
-
-            console.log('code',code)
-            const shortUrl = `${params.url}/${code}`;
-
-            const success = await model.save(url, code, shortUrl, hash);
-            if (success) {
-                return {
-                    url_code: code,
-                    short_url: shortUrl,
-                }
-            }
-        }
-        catch (err) {
-            console.log(err.message);
-        }
-
-        return null
+  get: async function (code) {
+    try {
+      return await model.getByCode(code);
+    } catch (err) {
+      console.log(err.message);
     }
-}
+  },
+
+  generate: async function (key, url) {
+    console.log('key',key)
+    console.log('url',url)
+
+    if (key !== params.key || !ValidUrl.isUri(url)) {
+      return null;
+    }
+
+    try {
+      const hash = sha1(url);
+
+    //   const existingData = await model.getByHash(hash);
+
+    //   if (existingData) {
+    //     return existingData;
+    //   }
+
+      const code = shortid.generate();
+
+      const shortUrl = `${params.url}/${code}`;
+
+      return { url, code, shortUrl, hash };
+    } catch (error) {
+      console.error("Error generating short URL:", error.message);
+    }
+
+    return null;
+  },
+
+  save: async function (data) {
+    try {
+      const { url, code, shortUrl, hash } = data;
+      await model.save(url, code, shortUrl, hash);
+    } catch (err) {
+      console.log(err.message);
+    }
+    return false;
+  },
+};
