@@ -10,6 +10,23 @@ services:
         - ./elasticmq.conf:/opt/elasticmq.conf
     networks:
         - hscommissions
+
+  db:
+    image: mysql:latest
+    env_file: ./.env
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin@123
+      MYSQL_DATABASE: $RDS_DATABASE
+      MYSQL_USER: $RDS_USERNAME
+      MYSQL_PASSWORD: $RDS_PASSWORD
+      MYSQL_TCP_PORT: $RDS_PORT
+    ports:
+      - $RDS_PORT:$RDS_PORT
+    logging:
+      driver: none
+    networks:
+      - hscommissions
   
   redis:
     image: redis
