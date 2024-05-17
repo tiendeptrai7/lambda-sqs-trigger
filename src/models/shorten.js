@@ -24,7 +24,7 @@ module.exports = {
 
     getByHash: function(hash) {
         return new Promise(function(resolve, reject) {
-            readerPool.query(`SELECT url_code, short_url FROM ${table} WHERE hash_url = ? LIMIT 1`, [hash], function(error, results){
+            readerPool.query(`SELECT url_code as code, short_url as shortUrl, hash_url as hash FROM ${table} WHERE hash_url = ? LIMIT 1`, [hash], function(error, results){
                 if (error) {
                     reject(error);
                 } else {

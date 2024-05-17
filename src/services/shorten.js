@@ -15,21 +15,12 @@ module.exports = {
   },
 
   generate: async function (key, url) {
-    console.log('key',key)
-    console.log('url',url)
 
     if (key !== params.key || !ValidUrl.isUri(url)) {
       return null;
     }
 
     try {
-      const hash = sha1(url);
-
-    //   const existingData = await model.getByHash(hash);
-
-    //   if (existingData) {
-    //     return existingData;
-    //   }
 
       const code = shortid.generate();
 
@@ -52,4 +43,13 @@ module.exports = {
     }
     return false;
   },
+
+  checkExist: async function (url) {
+
+    const hash = sha1(url);
+
+    const existingData = await model.getByHash(hash);
+
+    return existingData ? existingData : null;
+  }
 };
