@@ -10,6 +10,13 @@ services:
         - ./elasticmq.conf:/opt/elasticmq.conf
     networks:
         - hscommissions
+  
+  redis:
+    image: redis
+    ports:
+      - $REDIS_PORT:$REDIS_PORT
+    networks:
+      - hscommissions
 
 networks:
   hscommissions:

@@ -15,12 +15,12 @@ module.exports = {
   },
 
   generate: async function (key, url) {
-
     if (key !== params.key || !ValidUrl.isUri(url)) {
       return null;
     }
 
     try {
+      const hash = sha1(url);
 
       const code = shortid.generate();
 
@@ -35,21 +35,20 @@ module.exports = {
   },
 
   save: async function (data) {
+    const { url, code, shortUrl, hash } = data;
     try {
-      const { url, code, shortUrl, hash } = data;
       await model.save(url, code, shortUrl, hash);
     } catch (err) {
       console.log(err.message);
     }
-    return false;
+    return { url, code, shortUrl, hash };
   },
 
   checkExist: async function (url) {
-
     const hash = sha1(url);
 
     const existingData = await model.getByHash(hash);
 
     return existingData ? existingData : null;
-  }
+  },
 };
