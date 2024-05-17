@@ -8,9 +8,7 @@ const handler = async (event) => {
 
       const messageBody = JSON.parse(record.body)
 
-      const { url, code, shortUrl, hash } = messageBody;
-
-      const saveData = await save(url, code, shortUrl, hash);
+      const saveData = await save(messageBody);
 
       if (saveData) {
         //Redis cache
